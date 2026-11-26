@@ -1,0 +1,87 @@
+# LawAgent 生产编排：PostgreSQL + 后端 + 前端（一键起停）
+#   启动：docker compose up -d --build
+#   停止：docker compose down（数据保留在 lawagent-pg 卷）
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lawagent-postgres
+    environment:
+      POSTGRES_DB: lawagent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres   # 内网部署示例；公网务必改强密码
+    volumes:
+      - lawagent-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lawagent"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: lawagent-backend
+    environment:
+      - USE_SQLITE=0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=lawagent
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      # 会话记忆持久化：LangGraph PostgresSaver（HITL 挂起跨重启恢复）
+      - CHECKPOINTER_BACKEND=postgres
+      - SEED_DEMO_USERS=1
+      # 真实大模型（通义千问）：宿主机设了 DASHSCOPE_API_KEY 就自动注入；
+      # 没设则容器内走 Mock 模式（规则降级，仍可完整演示全链路）
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
+      - DASHSCOPE_MODEL=${DASHSCOPE_MODEL:-qwen-plus}
+      # 检索子 Agent（受限自主循环）：1=开，0=回退旧三路写死
+      - RETRIEVAL_AGENT_ENABLED=${RETRIEVAL_AGENT_ENABLED:-0}
+      # 签名密钥与演示密码都从宿主机 .env 注入，compose 里不再留明文默认值；
+      # 未配 JWT_SECRET 时后端以「随机临时密钥 + 告警」启动（重启令牌失效）
+      - APP_ENV=${APP_ENV:-dev}
+      - JWT_SECRET=${JWT_SECRET:-}
+      - DEMO_PASSWORD=${DEMO_PASSWORD:-}
+      # 阶段3 数据接真：不配则走本地 mock/本地判例库（健康检查里会标出来源）
+      # - ENTERPRISE_DATA_SOURCE=qcc
+      # - QCC_API_KEY=xxx
+      # - QCC_SECRET_KEY=xxx
+      # - PRECEDENT_DATA_SOURCE=api
+      # - PRECEDENT_API_URL=https://your-precedent-api/search
+      # 阶段4 运维：Prometheus 抓 http://backend:9089/metrics；
+      #   暴露到公网前务必设 METRICS_TOKEN（抓取端带 Authorization: Bearer）
+      - METRICS_ENABLED=1
+      # - METRICS_TOKEN=change-me
+      # 前置 nginx 反代：采信 X-Forwarded-For 做按 IP 限流（裸奔部署勿开）
+      - TRUST_PROXY=1
+    volumes:
+      # 备份落盘：用命名卷而不是 ./backups 宿主机绑定挂载 ——
+      # Windows/WSL 下宿主机盘符重新挂载后，绑定挂载会报
+      # 「mkdir /run/desktop/mnt/host/e: file exists」导致容器起不来（实测踩过）。
+      # 取出备份：docker cp lawagent-backend:/app/backups ./backups
+      - lawagent-backups:/app/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9089:9089"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9089/api/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  frontend:
+    build: ../Agent_events/lawagent-web
+    container_name: lawagent-frontend
+    ports:
+      - "3003:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  lawagent-pg:
+  lawagent-backups:

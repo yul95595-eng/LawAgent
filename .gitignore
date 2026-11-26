@@ -1,0 +1,45 @@
+# ── 密钥与环境（绝不提交）────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Python ─────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── 运行时产物 ──────────────────────────────────────────
+backups/
+*.db
+*.sqlite3
+instance/
+evals/runs/
+*.log
+
+# ── 工具与工作区 ────────────────────────────────────────
+.workbuddy/
+.idea/
+.vscode/
+.DS_Store
+
+# ── 个人求职材料（不进公开仓库）────────────────────────
+# 讲解稿、逐字稿、面试拷打里含面试策略与系统弱点分析，不适合公开
+法衡-*.md
+法衡-*.docx
+面试拷打*
+docs/项目讲解-零基础版.md
+docs/多Agent改造方案.md
+docs/AGENT_FLOW.md
+docs/*.pdf
+HANDOVER.md
+架构流程图.png
+*.docx

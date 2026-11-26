@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "name": "工商信息系统 Mock 数据（甲方系统本地 Mock）",
+    "note": "规格文档口径：外部系统对接用 Mock。生产切 httpx baseURL 后此文件仅作联调夹具。",
+    "updated": "2026-11-18"
+  },
+  "enterprises": [
+    {
+      "enterprise_name": "华创精密制造股份有限公司",
+      "credit_code": "91330100MA2H3XXXX1",
+      "legal_representative": "陈建国",
+      "registered_capital": "8000 万元人民币",
+      "established": "2012-06-15",
+      "employee_count": 500,
+      "industry": "通用设备制造业",
+      "business_scope": "精密机械设备及零部件的研发、制造、加工、销售；货物进出口；技术进出口；机械设备租赁",
+      "licenses": ["营业执照", "排污许可证", "安全生产标准化二级认证", "ISO9001 质量管理体系认证"],
+      "registration_address": "浙江省杭州市经济技术开发区科创大道 88 号",
+      "risk_hints": ["近三年无行政处罚记录", "1 起作为原告的买卖合同诉讼（已结案）"]
+    },
+    {
+      "enterprise_name": "杭州云启网络科技有限公司",
+      "credit_code": "91330106MA2B8XXXX2",
+      "legal_representative": "刘晓峰",
+      "registered_capital": "500 万元人民币",
+      "established": "2018-03-22",
+      "employee_count": 80,
+      "industry": "软件和信息技术服务业",
+      "business_scope": "计算机软件、网络技术的技术开发、技术咨询、技术服务、成果转让；第二类增值电信业务（凭许可证经营）",
+      "licenses": ["营业执照", "增值电信业务经营许可证（ICP）"],
+      "registration_address": "浙江省杭州市西湖区文三路 199 号",
+      "risk_hints": ["1 起软件著作权许可合同纠纷在审"]
+    },
+    {
+      "enterprise_name": "绿源食品（杭州）有限公司",
+      "credit_code": "91330110MA2D1XXXX3",
+      "legal_representative": "赵美玲",
+      "registered_capital": "2000 万元人民币",
+      "established": "2015-09-01",
+      "employee_count": 200,
+      "industry": "食品制造业",
+      "business_scope": "食品生产、销售；道路货物运输；食品添加剂销售",
+      "licenses": ["营业执照", "食品经营许可证"],
+      "registration_address": "浙江省杭州市余杭区食品工业园 6 号",
+      "risk_hints": ["持有食品生产许可证", "未办理排污许可证（食品生产行业要求核对中）"]
+    },
+    {
+      "enterprise_name": "宏达建筑工程有限公司",
+      "credit_code": "91330105MA2F6XXXX4",
+      "legal_representative": "孙志强",
+      "registered_capital": "5000 万元人民币",
+      "established": "2010-11-30",
+      "employee_count": 350,
+      "industry": "房屋建筑业",
+      "business_scope": "房屋建筑工程、市政公用工程施工；建筑劳务分包；建筑材料销售",
+      "licenses": ["营业执照"],
+      "registration_address": "浙江省杭州市拱墅区建材路 15 号",
+      "risk_hints": ["资质证书年检信息缺失", "2 起建设工程施工合同纠纷在审"]
+    }
+  ]
+}

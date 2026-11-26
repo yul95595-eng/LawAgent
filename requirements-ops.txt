@@ -1,0 +1,12 @@
+# ===== 阶段 4 运维可选依赖 =====
+# 服务本身不需要这些包；只有做压测 / 接 Prometheus 生态时才装。
+# 安装：pip install -r requirements-ops.txt
+#
+# 压测：locust -f scripts/locustfile.py --host http://127.0.0.1:9089
+# 抓指标：Prometheus 直接 scrape http://<host>:9089/metrics
+#   备份：SQLite 用内置脚本即可；PostgreSQL 需装 postgresql-client 里的 pg_dump
+
+locust>=2.20,<3.0
+
+# 可选：本地跑 Prometheus + Grafana 时用（服务端不依赖）
+# prometheus-client>=0.20   # 本项目已自带零依赖指标实现，通常不需要

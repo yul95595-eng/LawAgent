@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "name": "案件管理系统 Mock 数据",
+    "note": "外部 API get_case_detail 的本地 Mock；生产切 baseURL。"
+  },
+  "cases": [
+    {
+      "case_id": "CASE-2026-0891",
+      "case_title": "王某与杭州某科技公司违法解除劳动合同争议",
+      "case_type": "labor_termination",
+      "client": "王某（劳动者）",
+      "undertaking_lawyer": "张律师",
+      "branch": "杭州总部",
+      "received_at": "2026-11-02",
+      "case_text": "劳动者王某2019年3月入职杭州某科技有限公司，任高级工程师，月薪2万元，工作年限3年2个月。2022年5月10日，公司以「组织架构调整」为由口头通知解除劳动合同，未支付任何经济补偿。王某主张公司违法解除，要求支付2N赔偿金14万元。公司未举证存在法定解除情形，也未履行工会通知程序。"
+    },
+    {
+      "case_id": "CASE-2026-0902",
+      "case_title": "李某竞业限制违约争议",
+      "case_type": "labor_non_compete",
+      "client": "杭州某生物科技公司（用人单位）",
+      "undertaking_lawyer": "张律师",
+      "branch": "杭州总部",
+      "received_at": "2026-11-05",
+      "case_text": "用人单位李某前核心研发人员离职后入职竞争企业，涉嫌违反竞业限制协议。协议约定竞业期限3年，但未约定离职后经济补偿。用人单位主张违约金50万元。"
+    },
+    {
+      "case_id": "CASE-2026-0915",
+      "case_title": "华创精密股权投资协议专项咨询",
+      "case_type": "contract_equity",
+      "client": "华创精密制造股份有限公司",
+      "undertaking_lawyer": "李法务",
+      "branch": "上海分所",
+      "received_at": "2026-11-12",
+      "case_text": "华创精密制造股份有限公司拟与外部投资人签署股权投资协议，500人规模制造企业，注册资本8000万元，拟融资2000万元。协议含业绩对赌、股权回购、反稀释、优先清算条款，需做签约前合规体检与条款审查。"
+    }
+  ]
+}

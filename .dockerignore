@@ -1,0 +1,26 @@
+# 构建上下文瘦身 + 密钥隔离
+# .env 绝不进镜像：容器配置一律由 compose 的 environment 注入，
+# 否则镜像里会残留真实 DASHSCOPE/JWT 密钥，且 .env 的 USE_SQLITE=1 会与容器配置打架。
+.env
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# 本地开发库 / 备份 / 测试产物
+*.db
+*.db-wal
+*.db-shm
+backups/
+data/lawagent.db
+.pytest_tmp/
+
+.git/
+.gitignore
+.venv/
+venv/
+.idea/
+.vscode/

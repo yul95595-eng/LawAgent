@@ -1,0 +1,413 @@
+{
+  "meta": {
+    "name": "LawAgent 评测集",
+    "version": "v1",
+    "created": "2026-11-18",
+    "note": "口径：①法条引用必须能在条文库中查到 ②案由判定要与素材一致 ③越界问题不得编造条文。改题请新建 v2，不要就地改 v1。",
+    "groups": {
+      "case_analysis": "案件分析（CaseAgent 9 节点）",
+      "limitation": "时效咨询（case_faq 规则直出）",
+      "contract": "合同审查（ContractAgent 8 节点，可能触发 HITL）",
+      "compliance": "企业合规体检（ComplianceAgent 6 节点）",
+      "boundary": "越界提问（应拒答或引导，不得编条文）"
+    }
+  },
+  "cases": [
+    {
+      "id": "case_001",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "劳动者王某2019年3月入职杭州某科技有限公司，任高级工程师，月薪2万元，工作年限3年2个月。2022年5月10日，公司以「组织架构调整」为由口头通知解除劳动合同，未支付任何经济补偿。王某主张公司违法解除，要求支付2N赔偿金14万元。公司未举证存在法定解除情形，也未履行工会通知程序。"
+      },
+      "expect": {
+        "case_type": "labor_termination",
+        "must_include": ["违法解除"],
+        "citations_any": ["劳动合同法第八十七条"],
+        "min_citations": 2,
+        "precedent_case_type": "labor_termination"
+      }
+    },
+    {
+      "id": "case_002",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "李某为某公司前核心研发人员，离职后入职竞争企业，涉嫌违反竞业限制协议。协议约定竞业期限3年，但未约定离职后经济补偿。用人单位主张违约金50万元。李某咨询该协议是否有效、违约金是否应当支付。"
+      },
+      "expect": {
+        "case_type": "labor_non_compete",
+        "must_include": ["竞业"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_003",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "某公司与员工签订1年期劳动合同，却约定试用期6个月，试用期工资为转正工资的60%。员工入职5个月后被以「试用期不合格」辞退，未给出考核标准。员工咨询试用期约定是否合法、能否主张赔偿。"
+      },
+      "expect": {
+        "case_type": "labor_probation",
+        "must_include": ["试用期"],
+        "citations_any": ["劳动合同法第十九条"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_004",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "公司为技术人员提供专项培训并支付培训费8万元，约定服务期5年、违约金20万元。员工工作2年后离职，公司要求支付20万元违约金。员工咨询服务期违约金约定是否有效、应支付多少。"
+      },
+      "expect": {
+        "case_type": "labor_service_period",
+        "must_include": ["服务期"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_005",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "甲公司向乙公司采购设备一批，合同价款200万元，约定先付30%预付款，货到验收后付清。乙公司逾期交货60天且设备存在质量瑕疵，甲公司要求解除合同并赔偿损失。"
+      },
+      "expect": {
+        "case_type": "contract_sales",
+        "must_include": ["违约"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_006",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "投资方与目标公司及其创始股东签署股权投资协议，约定业绩对赌、股权回购、反稀释与优先清算条款。目标公司未完成承诺业绩，投资方要求创始股东按约定价格回购股权，创始股东主张对赌条款无效。"
+      },
+      "expect": {
+        "case_type": "contract_equity",
+        "must_include": ["回购"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_007",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "张某向朋友借款50万元，出具借条一份，约定月息2分，未约定还款期限。出借人多次催要未果，现起诉要求返还本金及利息。借款人主张利息约定过高。"
+      },
+      "expect": {
+        "case_type": "contract_lending",
+        "must_include": ["未收录"],
+        "min_citations": 0,
+        "note": "法条库未覆盖民间借贷领域：正确行为是明确说明未收录、不返回假引用，而不是凑一条劳动合同法条文充数"
+      }
+    },
+    {
+      "id": "case_008",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "A公司将其软件著作权独占许可给B公司使用，许可期限5年，许可费按年支付。B公司逾期未支付第二年许可费，A公司主张解除许可合同并停止授权。"
+      },
+      "expect": {
+        "case_type": "ip_license",
+        "must_include": ["许可"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_009",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "员工入职8个月，公司一直未签订书面劳动合同，也未缴纳社会保险。员工现主张未签书面劳动合同的二倍工资差额，并咨询能否以此为由解除并要求经济补偿。"
+      },
+      "expect": {
+        "must_include": ["二倍"],
+        "citations_any": ["劳动合同法第八十二条"],
+        "min_citations": 1
+      }
+    },
+    {
+      "id": "case_010",
+      "group": "case_analysis",
+      "endpoint": "/api/v1/cases/analyze",
+      "role": "lawyer",
+      "input": {
+        "case_text": "公司拖欠员工3个月工资共计6万元，员工多次催要未果，现仍在职。员工咨询能否直接申请劳动仲裁、能否主张经济补偿。"
+      },
+      "expect": {
+        "must_include": ["工资"],
+        "min_citations": 1
+      }
+    },
+
+    {
+      "id": "lim_001",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "劳动仲裁时效是多久？过了还能仲裁吗？"},
+      "expect": {
+        "must_include": ["1 年"],
+        "citations_any": ["劳动争议调解仲裁法第二十七条"]
+      }
+    },
+    {
+      "id": "lim_002",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "普通民事诉讼的诉讼时效是几年？"},
+      "expect": {
+        "must_include": ["3 年"],
+        "citations_any": ["民法典第一百八十八条"]
+      }
+    },
+    {
+      "id": "lim_003",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "工伤认定的申请时效是多久？"},
+      "expect": {
+        "must_include": ["1 年"]
+      }
+    },
+    {
+      "id": "lim_004",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "在职期间公司拖欠工资，仲裁时效怎么算？"},
+      "expect": {
+        "must_include": ["不受"]
+      }
+    },
+    {
+      "id": "lim_005",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "离职后发现公司拖欠工资，还能申请仲裁吗？时效多久？"},
+      "expect": {
+        "must_include": ["1 年"]
+      }
+    },
+    {
+      "id": "lim_006",
+      "group": "limitation",
+      "endpoint": "/api/v1/cases/faq",
+      "role": "lawyer",
+      "input": {"question": "竞业限制补偿金没给，主张权利的时效是多久？"},
+      "expect": {
+        "must_include": ["1 年"]
+      }
+    },
+
+    {
+      "id": "ctr_001",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某科技有限公司  乙方：张某\n第一条 合同期限：自2026年1月1日起至2026年12月31日止。\n第二条 试用期：试用期六个月，试用期工资为转正工资的60%。\n第三条 竞业限制：乙方离职后五年内不得从事同行业工作，甲方无需支付任何补偿。\n第四条 违约金：乙方提前离职须支付违约金十万元。\n第五条 工作时间：每周六天、每日十小时，不另计加班费。\n第六条 社会保险：按最低基数缴纳。",
+        "contract_title": "高风险劳动合同"
+      },
+      "expect": {
+        "risk_level_any": ["high"],
+        "min_risk_points": 4,
+        "must_include": ["试用期"]
+      }
+    },
+    {
+      "id": "ctr_002",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某贸易有限公司  乙方：李某\n第一条 合同期限：2026年1月1日至2028年12月31日，试用期三个月。\n第二条 工作地点：杭州市西湖区。\n第三条 工作时间：标准工时制，每日八小时、每周四十小时。\n第四条 劳动报酬：月工资12000元，每月15日前发放。\n第五条 社会保险：按国家规定缴纳。\n第六条 合同解除：按劳动合同法规定执行。",
+        "contract_title": "标准劳动合同"
+      },
+      "expect": {
+        "risk_level_any": ["low", "medium"]
+      }
+    },
+    {
+      "id": "ctr_003",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "竞业限制协议\n甲方：某科技公司  乙方：研发总监王某\n一、乙方离职后三年内不得在任何竞争企业任职。\n二、乙方违反本协议须支付违约金八十万元。\n三、本协议未约定甲方应向乙方支付的经济补偿。\n四、乙方离职后甲方无需另行通知，本协议自动生效。",
+        "contract_title": "竞业限制协议（无补偿）"
+      },
+      "expect": {
+        "risk_level_any": ["high", "medium"],
+        "min_risk_points": 2,
+        "must_include": ["竞业"]
+      }
+    },
+    {
+      "id": "ctr_004",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某物流公司  乙方：赵某\n第一条 本合同期限为两年。\n第二条 乙方须服从甲方任何岗位调整，不得提出异议。\n第三条 乙方提前离职的，须支付违约金五万元。\n第四条 甲方可根据经营情况随时解除本合同，无需支付补偿。",
+        "contract_title": "权利义务失衡劳动合同"
+      },
+      "expect": {
+        "risk_level_any": ["high"],
+        "min_risk_points": 2,
+        "must_include": ["违约金"]
+      }
+    },
+    {
+      "id": "ctr_005",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某咨询公司  乙方：周某\n第一条 合同期限：2026年3月1日至2029年2月28日。\n第二条 工作内容：管理咨询顾问。\n第三条 劳动报酬：月薪15000元。\n第四条 试用期：两个月。",
+        "contract_title": "条款缺失劳动合同"
+      },
+      "expect": {
+        "min_risk_points": 1
+      }
+    },
+    {
+      "id": "ctr_006",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某制造公司  乙方：孙某\n第一条 合同期限三年，试用期六个月。\n第二条 试用期工资为转正工资的70%。\n第三条 公司可依据规章制度调整乙方岗位及薪酬。\n第四条 乙方须无条件接受公司安排的加班。",
+        "contract_title": "试用期与调岗条款"
+      },
+      "expect": {
+        "must_include": ["试用期"],
+        "min_risk_points": 1
+      }
+    },
+    {
+      "id": "ctr_007",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某餐饮公司  乙方：吴某\n第一条 合同期限两年，试用期一个月。\n第二条 工作时间：每日十小时，每周六天。\n第三条 加班费已包含在月工资中，不再另行支付。\n第四条 乙方自愿放弃社会保险。",
+        "contract_title": "工时与社保条款"
+      },
+      "expect": {
+        "min_risk_points": 2,
+        "must_include": ["加班"]
+      }
+    },
+    {
+      "id": "ctr_008",
+      "group": "contract",
+      "endpoint": "/api/v1/contracts/review",
+      "role": "lawyer",
+      "input": {
+        "contract_text": "劳动合同书\n甲方：某设计公司  乙方：郑某\n第一条 合同期限：2026年1月1日至2027年12月31日。\n第二条 乙方离职后两年内不得从事同行业工作，公司按月支付补偿。\n第三条 乙方须支付违约金两万元。\n第四条 工资按月发放，标准为每月10000元。",
+        "contract_title": "竞业与违约金混合条款"
+      },
+      "expect": {
+        "min_risk_points": 1
+      }
+    },
+
+    {
+      "id": "cmp_001",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/check",
+      "role": "legal",
+      "input": {
+        "enterprise_name": "华创精密制造股份有限公司",
+        "enterprise_text": "拟与外部投资人签署股权投资协议，融资2000万元，需做签约前合规体检。"
+      },
+      "expect": {
+        "must_include": ["风险"],
+        "min_citations": 2
+      }
+    },
+    {
+      "id": "cmp_002",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/check",
+      "role": "legal",
+      "input": {
+        "enterprise_name": "绿源食品（杭州）有限公司",
+        "enterprise_text": "拟扩大食品生产规模，需核查生产许可与环保合规情况。"
+      },
+      "expect": {
+        "must_include": ["许可"]
+      }
+    },
+    {
+      "id": "cmp_003",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/check",
+      "role": "legal",
+      "input": {
+        "enterprise_name": "宏达建筑工程有限公司",
+        "enterprise_text": "拟参与政府工程投标，需核查资质与涉诉情况。"
+      },
+      "expect": {
+        "must_include": ["资质"]
+      }
+    },
+    {
+      "id": "cmp_004",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/check",
+      "role": "legal",
+      "input": {
+        "enterprise_name": "杭州云启网络科技有限公司",
+        "enterprise_text": "拟签订软件著作权许可合同，需核查涉诉与合规风险。"
+      },
+      "expect": {
+        "must_include": ["风险"]
+      }
+    },
+
+    {
+      "id": "bnd_001",
+      "group": "boundary",
+      "endpoint": "/api/v1/chat/stream",
+      "role": "lawyer",
+      "input": {"message": "帮我写一首关于春天的诗，要有意境一点"},
+      "expect": {
+        "refuse_keywords_any": ["法律服务", "无法", "不提供", "仅", "咨询"],
+        "forbid_citation": true
+      }
+    },
+    {
+      "id": "bnd_002",
+      "group": "boundary",
+      "endpoint": "/api/v1/chat/stream",
+      "role": "lawyer",
+      "input": {"message": "帮我预测明天贵州茅台的股价会涨还是跌"},
+      "expect": {
+        "refuse_keywords_any": ["法律服务", "无法", "不提供", "不在", "投资"],
+        "forbid_citation": true
+      }
+    }
+  ]
+}
